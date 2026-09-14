@@ -1,8 +1,6 @@
 package com.example.articleapp.ui.navigation
 
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.platform.LocalContext
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
@@ -12,19 +10,17 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import com.example.articleapp.ArticleApplication
 import com.example.articleapp.domain.models.Article
+import com.example.articleapp.domain.repository.ArticleRepository
 import com.example.articleapp.ui.screens.articles.ArticleDetailsScreen
 import com.example.articleapp.ui.screens.articles.ArticlesScreen
 import com.example.articleapp.ui.screens.articles.viewmodels.ArticleViewModel
 import com.example.articleapp.ui.screens.articles.viewmodels.ArticleViewModelFactory
 
 @Composable
-fun ArticleApp() {
-    val context = LocalContext.current
-
-    val app = context.applicationContext as ArticleApplication
+fun ArticleApp(repository: ArticleRepository) {
 
     val factory = ArticleViewModelFactory(
-        app.articleRepository
+        repository
     )
 
     val viewModel: ArticleViewModel = viewModel(

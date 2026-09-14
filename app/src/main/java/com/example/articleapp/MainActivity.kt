@@ -14,9 +14,12 @@ class MainActivity : ComponentActivity() {
 
         enableEdgeToEdge()
 
+        val app = application as ArticleApplication
+        val repository = app.articleRepository
+
         setContent {
             ArticleAppTheme {
-                ArticleApp()
+                ArticleApp(repository)
             }
         }
     }
