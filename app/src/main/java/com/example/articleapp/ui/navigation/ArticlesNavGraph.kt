@@ -49,7 +49,12 @@ fun ArticleNavHost(
                 it.id == articleId
             }
             ArticleDetailsScreen(
-                article = article
+                article = article,
+                onBackClick = {
+                    navController.navigate(
+                        route = ArticleRoute.Articles
+                    )
+                }
             )
         }
     }

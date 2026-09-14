@@ -63,4 +63,5 @@ dependencies {
     implementation(libs.coil.compose)
     implementation(libs.coil.network.ktor3)
     implementation(libs.androidx.navigation.compose)
+    implementation(libs.androidx.compose.material.icons)
 }
