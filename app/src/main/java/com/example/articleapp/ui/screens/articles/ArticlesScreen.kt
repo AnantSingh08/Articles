@@ -17,18 +17,24 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
+import com.example.articleapp.R
 import com.example.articleapp.domain.models.Article
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ArticlesScreen(
     articles: List<Article>,
+    isRefreshing: Boolean,
+    onRefresh: () -> Unit,
     onArticleClick: (Long) -> Unit
 ) {
     Scaffold(
@@ -39,26 +45,33 @@ fun ArticlesScreen(
                     Text(
                         modifier = Modifier.fillMaxWidth(),
                         textAlign = TextAlign.Center,
-                        text = "Articles"
+                        text = "Articles",
+                        fontWeight = FontWeight.Bold
                     )
                 }
             )
         }
     ) { innerPadding ->
-        LazyColumn(
+        PullToRefreshBox(
             modifier = Modifier.fillMaxSize(),
-            contentPadding = PaddingValues(
-                top = innerPadding.calculateTopPadding(),
-                bottom = innerPadding.calculateBottomPadding(),
-                start = 16.dp,
-                end = 16.dp
-            )
+            isRefreshing = isRefreshing,
+            onRefresh = onRefresh,
         ) {
-            items(
-                items = articles,
-                key = { article -> article.id }
-            ) { article ->
-                ArticleItem(article = article, onArticleClick = onArticleClick)
+            LazyColumn(
+                modifier = Modifier.fillMaxSize(),
+                contentPadding = PaddingValues(
+                    top = innerPadding.calculateTopPadding(),
+                    bottom = innerPadding.calculateBottomPadding(),
+                    start = 16.dp,
+                    end = 16.dp
+                )
+            ) {
+                items(
+                    items = articles,
+                    key = { article -> article.id }
+                ) { article ->
+                    ArticleItem(article = article, onArticleClick = onArticleClick)
+                }
             }
         }
     }
@@ -79,13 +92,19 @@ fun ArticleItem(
             AsyncImage(
                 modifier = Modifier.size(50.dp),
                 model = article.imageUrl,
-                contentDescription = article.title
+                contentDescription = article.title,
+                onError = {
+                    println("IMAGE ERROR: ${it.result.throwable}")
+                },
+                placeholder = painterResource(R.drawable.outline_ad_group_24),
+                error = painterResource(R.drawable.outline_ad_group_24)
             )
             Spacer(modifier = Modifier.width(4.dp))
             Column {
                 Text(
                     style = MaterialTheme.typography.titleMedium,
-                    text = article.title
+                    fontWeight = FontWeight.Bold,
+                    text = article.title,
                 )
                 Text(
                     style = MaterialTheme.typography.bodyMedium,
