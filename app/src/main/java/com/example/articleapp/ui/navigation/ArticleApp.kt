@@ -46,7 +46,8 @@ fun ArticleApp(repository: ArticleRepository) {
         navController = navController,
         uiState = uiState,
         isRefreshing = isRefreshing,
-        onRefresh = viewModel::refreshArticles
+        onRefresh = viewModel::refreshArticles,
+        onBookmarkClick = viewModel::updateBookMark
     )
 }
 
@@ -55,7 +56,8 @@ fun ArticleNavHost(
     navController: NavHostController,
     uiState: ArticleUiState,
     isRefreshing: Boolean,
-    onRefresh: () -> Unit
+    onRefresh: () -> Unit,
+    onBookmarkClick: (Long, Boolean) -> Unit
 ) {
     NavHost(
         navController = navController,
@@ -81,7 +83,8 @@ fun ArticleNavHost(
                             navController.navigate(
                                 route = ArticleRoute.Details(articleId)
                             )
-                        }
+                        },
+                        onBookmarkClick = onBookmarkClick
                     )
                 }
 

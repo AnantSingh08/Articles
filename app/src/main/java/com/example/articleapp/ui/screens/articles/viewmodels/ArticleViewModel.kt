@@ -24,6 +24,18 @@ class ArticleViewModel(
         loadArticles()
     }
 
+    private fun observeArticles() {
+        viewModelScope.launch {
+            repository.getAllArticles().collect { articles ->
+                if (articles.isNotEmpty()) {
+                    _uiState.value = ArticleUiState.Success(
+                        articles
+                    )
+                }
+            }
+        }
+    }
+
     fun refreshArticles() {
         println("REFRESH CALLED")
         viewModelScope.launch {
@@ -71,6 +83,19 @@ class ArticleViewModel(
                     )
                 }
             }
+            observeArticles()
+        }
+    }
+
+    fun updateBookMark(
+        articleId: Long,
+        isBookmarked: Boolean
+    ) {
+        viewModelScope.launch {
+            repository.updateBookmark(
+                articleId = articleId,
+                isBookmarked = isBookmarked,
+            )
         }
     }
 

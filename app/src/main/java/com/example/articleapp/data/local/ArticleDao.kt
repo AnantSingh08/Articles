@@ -24,4 +24,14 @@ interface ArticleDao {
         deleteAllArticles()
         insertArticles(articles)
     }
+
+    @Query("""
+        UPDATE articles
+        SET isBookmarked = :isBookmarked
+        WHERE id = :articleId
+    """)
+    suspend fun updateBookmark(
+        articleId: Long,
+        isBookmarked: Boolean
+    )
 }

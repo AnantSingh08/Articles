@@ -7,4 +7,9 @@ interface ArticleRepository {
     fun getAllArticles(): Flow<List<Article>>
 
     suspend fun refreshArticles()
+
+    suspend fun updateBookmark(
+        articleId: Long,
+        isBookmarked: Boolean
+    )
 }

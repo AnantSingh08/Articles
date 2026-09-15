@@ -11,8 +11,13 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.BookmarkAdded
+import androidx.compose.material.icons.filled.BookmarkBorder
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -35,7 +40,8 @@ fun ArticlesScreen(
     articles: List<Article>,
     isRefreshing: Boolean,
     onRefresh: () -> Unit,
-    onArticleClick: (Long) -> Unit
+    onArticleClick: (Long) -> Unit,
+    onBookmarkClick: (Long, Boolean) -> Unit
 ) {
     Scaffold(
         modifier = Modifier.fillMaxSize(),
@@ -70,7 +76,7 @@ fun ArticlesScreen(
                     items = articles,
                     key = { article -> article.id }
                 ) { article ->
-                    ArticleItem(article = article, onArticleClick = onArticleClick)
+                    ArticleItem(article = article, onArticleClick = onArticleClick, onBookmarkClick = onBookmarkClick)
                 }
             }
         }
@@ -80,7 +86,8 @@ fun ArticlesScreen(
 @Composable
 fun ArticleItem(
     article: Article,
-    onArticleClick: (Long) -> Unit
+    onArticleClick: (Long) -> Unit,
+    onBookmarkClick: (Long, Boolean) -> Unit
 ) {
     Card(
         modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
@@ -100,7 +107,9 @@ fun ArticleItem(
                 error = painterResource(R.drawable.outline_ad_group_24)
             )
             Spacer(modifier = Modifier.width(4.dp))
-            Column {
+            Column(
+                modifier = Modifier.weight(1f)
+            ) {
                 Text(
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
@@ -112,6 +121,36 @@ fun ArticleItem(
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
+            }
+            if(article.isBookmarked) {
+                IconButton(
+                    onClick = {
+                        onBookmarkClick (
+                            article.id,
+                            false
+                        )
+                    }
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.BookmarkAdded,
+                        contentDescription = "Bookmark",
+                    )
+                }
+
+            } else {
+                IconButton(
+                    onClick = {
+                        onBookmarkClick (
+                            article.id,
+                            true
+                        )
+                    }
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.BookmarkBorder,
+                        contentDescription = "Bookmark"
+                    )
+                }
             }
         }
     }
