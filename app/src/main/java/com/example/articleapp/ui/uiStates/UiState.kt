@@ -2,15 +2,15 @@ package com.example.articleapp.ui.uiStates
 
 import com.example.articleapp.domain.models.Article
 
-sealed interface ArticleUiState {
+sealed interface UiState {
 
-    data object Loading: ArticleUiState
+    data object Loading: UiState
 
     data class Success(
         val articles: List<Article>
-    ): ArticleUiState
+    ): UiState
 
     data class Error(
         val message: String
-    ): ArticleUiState
+    ): UiState
 }

@@ -6,6 +6,10 @@ import kotlinx.coroutines.flow.Flow
 interface ArticleRepository {
     fun getAllArticles(): Flow<List<Article>>
 
+    suspend fun getArticleById(articleId: Long): Article?
+
+    fun getBookmarkedArticles(): Flow<List<Article>>
+
     suspend fun refreshArticles()
 
     suspend fun updateBookmark(

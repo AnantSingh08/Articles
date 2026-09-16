@@ -76,7 +76,11 @@ fun ArticlesScreen(
                     items = articles,
                     key = { article -> article.id }
                 ) { article ->
-                    ArticleItem(article = article, onArticleClick = onArticleClick, onBookmarkClick = onBookmarkClick)
+                    ArticleItem(
+                        article = article,
+                        onArticleClick = onArticleClick,
+                        onBookmarkClick = onBookmarkClick
+                    )
                 }
             }
         }
@@ -87,10 +91,12 @@ fun ArticlesScreen(
 fun ArticleItem(
     article: Article,
     onArticleClick: (Long) -> Unit,
-    onBookmarkClick: (Long, Boolean) -> Unit
+    onBookmarkClick: ((Long, Boolean) -> Unit)? = null
 ) {
     Card(
-        modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 4.dp),
         onClick = {
             onArticleClick(article.id)
         }
@@ -122,32 +128,22 @@ fun ArticleItem(
                     overflow = TextOverflow.Ellipsis
                 )
             }
-            if(article.isBookmarked) {
-                IconButton(
-                    onClick = {
-                        onBookmarkClick (
-                            article.id,
-                            false
-                        )
-                    }
-                ) {
-                    Icon(
-                        imageVector = Icons.Filled.BookmarkAdded,
-                        contentDescription = "Bookmark",
-                    )
-                }
 
-            } else {
+            if (onBookmarkClick != null) {
                 IconButton(
                     onClick = {
-                        onBookmarkClick (
+                        onBookmarkClick(
                             article.id,
-                            true
+                            !article.isBookmarked
                         )
                     }
                 ) {
                     Icon(
-                        imageVector = Icons.Filled.BookmarkBorder,
+                        imageVector = if (article.isBookmarked) {
+                            Icons.Filled.BookmarkAdded
+                        } else {
+                            Icons.Filled.BookmarkBorder
+                        },
                         contentDescription = "Bookmark"
                     )
                 }

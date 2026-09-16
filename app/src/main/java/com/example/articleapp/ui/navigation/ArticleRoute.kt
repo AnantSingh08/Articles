@@ -11,4 +11,7 @@ sealed class ArticleRoute {
     data class Details(
         val articleId: Long
     ): ArticleRoute()
+
+    @Serializable
+    data object Bookmarks: ArticleRoute()
 }

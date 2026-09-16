@@ -13,6 +13,9 @@ interface ArticleDao {
     @Query("SELECT * FROM articles")
     fun getAllArticles(): Flow<List<ArticleEntity>>
 
+    @Query("Select * FROM articles WHERE id = :articleId")
+    suspend fun getArticleById(articleId: Long): ArticleEntity?
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertArticles(articles: List<ArticleEntity>)
 
@@ -34,4 +37,7 @@ interface ArticleDao {
         articleId: Long,
         isBookmarked: Boolean
     )
+
+    @Query("SELECT * FROM articles WHERE isBookmarked = 1")
+    fun getBookmarkedArticles(): Flow<List<ArticleEntity>>
 }

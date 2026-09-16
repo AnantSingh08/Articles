@@ -3,7 +3,7 @@ package com.example.articleapp.ui.screens.articles.viewmodels
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.articleapp.domain.repository.ArticleRepository
-import com.example.articleapp.ui.uiStates.ArticleUiState
+import com.example.articleapp.ui.uiStates.UiState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
@@ -12,8 +12,8 @@ import kotlinx.coroutines.launch
 class ArticleViewModel(
     private val repository: ArticleRepository
 ) : ViewModel() {
-    private val _uiState = MutableStateFlow<ArticleUiState>(
-        ArticleUiState.Loading
+    private val _uiState = MutableStateFlow<UiState>(
+        UiState.Loading
     )
     val uiState = _uiState.asStateFlow()
 
@@ -28,7 +28,7 @@ class ArticleViewModel(
         viewModelScope.launch {
             repository.getAllArticles().collect { articles ->
                 if (articles.isNotEmpty()) {
-                    _uiState.value = ArticleUiState.Success(
+                    _uiState.value = UiState.Success(
                         articles
                     )
                 }
@@ -47,7 +47,7 @@ class ArticleViewModel(
 
                 val articles = repository.getAllArticles().first()
                 if (articles.isNotEmpty()) {
-                    _uiState.value = ArticleUiState.Success(
+                    _uiState.value = UiState.Success(
                         articles
                     )
                 }
@@ -68,7 +68,7 @@ class ArticleViewModel(
                 val articles = repository.getAllArticles().first()
 
                 if (articles.isNotEmpty()) {
-                    _uiState.value = ArticleUiState.Success(articles)
+                    _uiState.value = UiState.Success(articles)
                 }
             } catch (e: Exception) {
                 println("LOAD ARTICLES ERROR: ${e.message}")
@@ -76,9 +76,9 @@ class ArticleViewModel(
                 val articles = repository.getAllArticles().first()
 
                 if (articles.isNotEmpty()) {
-                    _uiState.value = ArticleUiState.Success(articles)
+                    _uiState.value = UiState.Success(articles)
                 } else {
-                    _uiState.value = ArticleUiState.Error(
+                    _uiState.value = UiState.Error(
                         "Unable to load articles"
                     )
                 }

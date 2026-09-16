@@ -23,6 +23,18 @@ class ArticleRepositoryImpl(
         }
     }
 
+    override suspend fun getArticleById(articleId: Long): Article? {
+        return articleDao.getArticleById(articleId)?.toDomain()
+    }
+
+    override fun getBookmarkedArticles(): Flow<List<Article>> {
+        return articleDao.getBookmarkedArticles().map { entities ->
+            entities.map { entity ->
+                entity.toDomain()
+            }
+        }
+    }
+
     override suspend fun refreshArticles() {
         val response = dataSource.getArticles()
 

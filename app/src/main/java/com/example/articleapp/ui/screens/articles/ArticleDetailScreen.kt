@@ -22,7 +22,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import com.example.articleapp.domain.models.Article
@@ -40,7 +39,7 @@ fun ArticleDetailsScreen(
                 title = {
                     Text(
                         modifier = Modifier.fillMaxWidth(),
-                        text = "Articles",
+                        text = "Article Details",
                         fontWeight = FontWeight.Bold,
                     )
 
