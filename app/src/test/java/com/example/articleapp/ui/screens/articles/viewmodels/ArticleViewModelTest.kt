@@ -5,6 +5,7 @@ import com.example.articleapp.ui.MainDispatcherRule
 import com.example.articleapp.ui.uiStates.UiState
 import junit.framework.TestCase.assertEquals
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
@@ -124,6 +125,45 @@ class ArticleViewModelTest {
         assertEquals(
             true,
             repository.updatedBookmarkState
+        )
+    }
+
+    @Test
+    fun updateSearchQuery_whenQueryMatchesArticles_returnsFilteredArticles() = runTest {
+        val articles = listOf(
+            Article(
+                id = 1L,
+                title = "Kotlin Coroutines",
+                description = "Understanding Coroutines",
+                isBookmarked = false,
+                imageUrl = null
+            ),
+            Article(
+                id = 2L,
+                title = "Android Architecture",
+                description = "Understanding Android architecture",
+                isBookmarked = false,
+                imageUrl = null
+            ),
+            Article(
+                id = 3L,
+                title = "Kotlin Flow",
+                description = "Reactive streams with Kotlin",
+                isBookmarked = false,
+                imageUrl = null
+            )
+        )
+
+        repository.articles = articles
+        viewModel = ArticleViewModel(repository)
+
+        viewModel.updateSearchQuery("Kotlin")
+
+        val filteredArticles = viewModel.filteredArticles.first()
+
+        assertEquals(
+            listOf(articles[0], articles[2]),
+            filteredArticles
         )
     }
 

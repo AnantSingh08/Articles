@@ -11,9 +11,11 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.BookmarkAdded
 import androidx.compose.material.icons.filled.BookmarkBorder
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -21,9 +23,11 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -41,7 +45,9 @@ fun ArticlesScreen(
     isRefreshing: Boolean,
     onRefresh: () -> Unit,
     onArticleClick: (Long) -> Unit,
-    onBookmarkClick: (Long, Boolean) -> Unit
+    onBookmarkClick: (Long, Boolean) -> Unit,
+    searchQuery: String,
+    onSearchQueryChanged: (String) -> Unit,
 ) {
     Scaffold(
         modifier = Modifier.fillMaxSize(),
@@ -63,24 +69,55 @@ fun ArticlesScreen(
             isRefreshing = isRefreshing,
             onRefresh = onRefresh,
         ) {
-            LazyColumn(
-                modifier = Modifier.fillMaxSize(),
-                contentPadding = PaddingValues(
-                    top = innerPadding.calculateTopPadding(),
-                    bottom = innerPadding.calculateBottomPadding(),
-                    start = 16.dp,
-                    end = 16.dp
-                )
-            ) {
-                items(
-                    items = articles,
-                    key = { article -> article.id }
-                ) { article ->
-                    ArticleItem(
-                        article = article,
-                        onArticleClick = onArticleClick,
-                        onBookmarkClick = onBookmarkClick
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(innerPadding)
+            ){
+
+                TextField(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp),
+                    value = searchQuery,
+                    onValueChange = onSearchQueryChanged,
+                    placeholder = {
+                        Text(text = "Search Articles")
+                    },
+                    singleLine = true,
+                    leadingIcon = {
+                        Icon(
+                            imageVector = Icons.Default.Search,
+                            contentDescription = "Search"
+                        )
+                    },
+
                     )
+                val listState = rememberLazyListState()
+
+                LaunchedEffect(searchQuery) {
+                    listState.scrollToItem(0)
+                }
+
+                LazyColumn(
+                    state = listState,
+                    modifier = Modifier.weight(1f),
+                    contentPadding = PaddingValues(
+                        bottom = 16.dp,
+                        start = 16.dp,
+                        end = 16.dp
+                    )
+                ) {
+                    items(
+                        items = articles,
+                        key = { article -> article.id }
+                    ) { article ->
+                        ArticleItem(
+                            article = article,
+                            onArticleClick = onArticleClick,
+                            onBookmarkClick = onBookmarkClick
+                        )
+                    }
                 }
             }
         }

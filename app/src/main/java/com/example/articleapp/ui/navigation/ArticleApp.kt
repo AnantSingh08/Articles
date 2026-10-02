@@ -74,6 +74,9 @@ fun ArticleNavHost(
                 val uiState by viewModel.uiState.collectAsStateWithLifecycle(
                     UiState.Loading
                 )
+                val searchQuery by viewModel.searchQuery.collectAsStateWithLifecycle()
+                val filteredArticles by viewModel.filteredArticles.collectAsStateWithLifecycle()
+
                 val isRefreshing by viewModel.isRefreshing.collectAsStateWithLifecycle()
                 when (val state = uiState) {
                     UiState.Loading -> {
@@ -87,7 +90,7 @@ fun ArticleNavHost(
 
                     is UiState.Success -> {
                         ArticlesScreen(
-                            articles = state.articles,
+                            articles = filteredArticles,
                             isRefreshing = isRefreshing,
                             onRefresh = viewModel::refreshArticles,
                             onArticleClick = { articleId ->
@@ -95,7 +98,9 @@ fun ArticleNavHost(
                                     route = ArticleRoute.Details(articleId)
                                 )
                             },
-                            onBookmarkClick = viewModel::updateBookMark
+                            onBookmarkClick = viewModel::updateBookMark,
+                            searchQuery = searchQuery,
+                            onSearchQueryChanged = viewModel::updateSearchQuery
                         )
                     }
 

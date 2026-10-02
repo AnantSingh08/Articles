@@ -36,7 +36,9 @@ class ArticlesScreenTest {
                 isRefreshing = false,
                 onRefresh = {},
                 onArticleClick = {},
-                onBookmarkClick = {_, _ ->}
+                onBookmarkClick = {_, _ ->},
+                searchQuery = "",
+                onSearchQueryChanged = {_->}
             )
         }
 

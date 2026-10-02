@@ -5,7 +5,11 @@ import androidx.lifecycle.viewModelScope
 import com.example.articleapp.domain.repository.ArticleRepository
 import com.example.articleapp.ui.uiStates.UiState
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.SharingStarted.Companion.WhileSubscribed
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 class ArticleViewModel(
@@ -23,6 +27,31 @@ class ArticleViewModel(
         observeArticles()
         refreshArticles()
     }
+
+    private val _searchQuery = MutableStateFlow("")
+    val searchQuery = _searchQuery.asStateFlow()
+
+    fun updateSearchQuery(query: String) {
+        _searchQuery.value = query
+    }
+
+    val filteredArticles = combine(
+        uiState,
+        searchQuery
+    ) { state, query ->
+        if (state is UiState.Success) {
+            state.articles.filter { article ->
+                (article.title.contains(query, true) ||
+                    article.description.contains(query, true))
+            }
+        } else {
+            emptyList()
+        }
+    }.stateIn(
+        scope = viewModelScope,
+        started = WhileSubscribed(5_000),
+        initialValue = emptyList()
+    )
 
     private fun observeArticles() {
         viewModelScope.launch {
