@@ -6,7 +6,6 @@ import com.example.articleapp.domain.repository.ArticleRepository
 import com.example.articleapp.ui.uiStates.UiState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
 class ArticleViewModel(
@@ -21,69 +20,37 @@ class ArticleViewModel(
     val isRefreshing = _isRefreshing.asStateFlow()
 
     init {
-        loadArticles()
+        observeArticles()
+        refreshArticles()
     }
 
     private fun observeArticles() {
         viewModelScope.launch {
             repository.getAllArticles().collect { articles ->
-                if (articles.isNotEmpty()) {
-                    _uiState.value = UiState.Success(
+                _uiState.value = if (articles.isNotEmpty()) {
+                    UiState.Success(
                         articles
                     )
+                } else {
+                    UiState.Error("No articles to show")
                 }
             }
         }
     }
 
     fun refreshArticles() {
-        println("REFRESH CALLED")
         viewModelScope.launch {
 
             _isRefreshing.value = true
 
             try {
                 repository.refreshArticles()
-
-                val articles = repository.getAllArticles().first()
-                if (articles.isNotEmpty()) {
-                    _uiState.value = UiState.Success(
-                        articles
-                    )
-                }
             } catch (e: Exception) {
-                // We'll handle this properly next
-                println("REFRESH NETWORK FAILED: ${e.message}")
+                // Keep showing whatever Room currently has.
+                // observeArticles() is responsible for UiState.
             } finally {
                 _isRefreshing.value = false
             }
-        }
-    }
-
-    private fun loadArticles() {
-        viewModelScope.launch {
-            try {
-                repository.refreshArticles()
-
-                val articles = repository.getAllArticles().first()
-
-                if (articles.isNotEmpty()) {
-                    _uiState.value = UiState.Success(articles)
-                }
-            } catch (e: Exception) {
-                println("LOAD ARTICLES ERROR: ${e.message}")
-
-                val articles = repository.getAllArticles().first()
-
-                if (articles.isNotEmpty()) {
-                    _uiState.value = UiState.Success(articles)
-                } else {
-                    _uiState.value = UiState.Error(
-                        "Unable to load articles"
-                    )
-                }
-            }
-            observeArticles()
         }
     }
 

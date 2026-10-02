@@ -20,6 +20,8 @@ fun ArticleDto.toEntity(): ArticleEntity {
         title = title,
         description = description,
         isBookmarked = false,
-        imageUrl = imageUrl
+        imageUrl = imageUrl,
+        category = "",
+        publishedAt = 0L
     )
 }
