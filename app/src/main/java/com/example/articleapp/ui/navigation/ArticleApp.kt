@@ -9,13 +9,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -23,26 +20,22 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
-import com.example.articleapp.domain.models.Article
-import com.example.articleapp.domain.repository.ArticleRepository
 import com.example.articleapp.ui.components.ArticleBottomBar
 import com.example.articleapp.ui.screens.articles.ArticleDetailsScreen
 import com.example.articleapp.ui.screens.articles.ArticlesScreen
+import com.example.articleapp.ui.screens.articles.viewmodels.ArticleDetailsViewModel
 import com.example.articleapp.ui.screens.articles.viewmodels.ArticleViewModel
-import com.example.articleapp.ui.screens.articles.viewmodels.ArticleViewModelFactory
 import com.example.articleapp.ui.screens.bookmarks.BookmarkScreen
-import com.example.articleapp.ui.screens.bookmarks.viewModels.BookMarkedViewModelFactory
 import com.example.articleapp.ui.screens.bookmarks.viewModels.BookmarkedViewModel
 import com.example.articleapp.ui.uiStates.UiState
 
 @Composable
-fun ArticleApp(repository: ArticleRepository) {
+fun ArticleApp() {
 
     val navController = rememberNavController()
 
     ArticleNavHost(
         navController = navController,
-        repository = repository,
     )
 }
 
@@ -50,7 +43,6 @@ fun ArticleApp(repository: ArticleRepository) {
 @Composable
 fun ArticleNavHost(
     navController: NavHostController,
-    repository: ArticleRepository,
 ) {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
 
@@ -69,8 +61,7 @@ fun ArticleNavHost(
         )
         {
             composable<ArticleRoute.Articles> {
-                val factory = ArticleViewModelFactory(repository)
-                val viewModel: ArticleViewModel = viewModel(factory = factory)
+                val viewModel: ArticleViewModel = hiltViewModel()
                 val uiState by viewModel.uiState.collectAsStateWithLifecycle(
                     UiState.Loading
                 )
@@ -121,13 +112,14 @@ fun ArticleNavHost(
                 val route = backStackEntry.toRoute<ArticleRoute.Details>()
                 val articleId = route.articleId
 
-                var article by remember {
-                    mutableStateOf<Article?>(null)
-                }
+                val viewModel: ArticleDetailsViewModel = hiltViewModel()
+
 
                 LaunchedEffect(articleId) {
-                    article = repository.getArticleById(articleId)
+                    viewModel.loadArticle(articleId)
                 }
+
+                val article by viewModel.article.collectAsStateWithLifecycle()
 
                 article?.let {
                     ArticleDetailsScreen(
@@ -141,10 +133,7 @@ fun ArticleNavHost(
             }
 
             composable<ArticleRoute.Bookmarks> {
-                val factory = BookMarkedViewModelFactory(repository = repository)
-                val viewModel: BookmarkedViewModel = viewModel(
-                    factory = factory
-                )
+                val viewModel: BookmarkedViewModel = hiltViewModel()
 
                 val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 

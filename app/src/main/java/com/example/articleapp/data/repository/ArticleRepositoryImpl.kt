@@ -9,8 +9,9 @@ import com.example.articleapp.domain.repository.ArticleRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
+import javax.inject.Inject
 
-class ArticleRepositoryImpl(
+class ArticleRepositoryImpl @Inject constructor(
     private val articleDao: ArticleDao,
     private val dataSource: ArticleDataSource
 ) : ArticleRepository {
